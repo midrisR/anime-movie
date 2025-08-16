@@ -1,7 +1,15 @@
 import { NextResponse } from "next/server";
 
+// Wajib: runtime Node dan non-statis biar streaming lancar
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+// Paksa header Referer sesuai kebutuhan sumber
 const FORCED_HEADERS = {
-  // 'Referer': 'https://contoh-sumber.com/',
+  Referer: "https://kwik.cx/",
+  // (Opsional tapi sering membantu)
+  // Origin: 'https://kwik.cx',
   // 'User-Agent': 'Mozilla/5.0',
 };
 
@@ -12,7 +20,7 @@ export async function GET(req) {
     return NextResponse.json({ error: "Missing url" }, { status: 400 });
   }
 
-  const incoming = req.headers;
+  // Teruskan header penting (termasuk Range) + override Referer
   const forwardHeaders = new Headers();
   const passThrough = [
     "range",
@@ -24,11 +32,10 @@ export async function GET(req) {
     "referer",
     "cache-control",
   ];
-  passThrough.forEach((h) => {
-    const v = incoming.get(h);
+  for (const h of passThrough) {
+    const v = req.headers.get(h);
     if (v) forwardHeaders.set(h, v);
-  });
-
+  }
   for (const [k, v] of Object.entries(FORCED_HEADERS)) {
     forwardHeaders.set(k, v);
   }
@@ -36,6 +43,7 @@ export async function GET(req) {
   const upstream = await fetch(url, {
     method: "GET",
     headers: forwardHeaders,
+    cache: "no-store",
   });
 
   const resHeaders = new Headers();
@@ -54,6 +62,7 @@ export async function GET(req) {
   });
 
   resHeaders.set("access-control-allow-origin", "*");
+  resHeaders.set("cross-origin-resource-policy", "cross-origin");
 
   return new NextResponse(upstream.body, {
     status: upstream.status,

@@ -1,7 +1,10 @@
-import { getHomeAnime } from "@/lib/api";
+import { getHomeAnime, getTrendingAnime } from "@/lib/api";
 import Link from "next/link";
 export default async function Home() {
   const { data } = await getHomeAnime();
+  const { results } = await getTrendingAnime();
+  console.log(results);
+
   const url = (text) => {
     return text
       .toLowerCase() // jadi huruf kecil semua
@@ -13,20 +16,23 @@ export default async function Home() {
   return (
     <div className="mb-12">
       <div className="w-full bg-rose-700 p-2 mb-4 text-white">
-        Popular Anime
+        Trending Anime
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 container mx-auto mt-8 ">
-        {data.spotlightAnimes.map((anime) => (
-          <Link href={`/${url(anime.name)}/${url(anime.id)}`} key={anime.id}>
+        {results.map((anime) => (
+          <Link
+            href={`/${url(anime.title.english)}/${url(anime.id)}`}
+            key={anime.id}
+          >
             <div className="flex flex-col justify-center w-3xs mx-auto mb-6">
               <img
-                src={anime.poster}
-                alt={anime.name}
+                src={anime.image}
+                alt={anime.title.english}
                 width={200}
                 className="h-80 object-cover rounded-2xl "
               />
               <p className="text-white font-light text-sm mt-1 mx-1">
-                {anime.name}
+                {anime.title.english}
               </p>
             </div>
           </Link>
