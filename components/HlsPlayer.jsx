@@ -1,5 +1,5 @@
 "use client";
-
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 
@@ -21,7 +21,7 @@ export default function HlsPlayer({
     if (!video || !src) return;
 
     const finalSrc = useProxy
-      ? `http://localhost:8080?url=${encodeURIComponent(src)}`
+      ? `http://localhost:8080/?url=${encodeURIComponent(src)}`
       : src;
 
     // Cek dukungan codec tapi tetap lanjutkan
@@ -65,19 +65,17 @@ export default function HlsPlayer({
         enableWorker: false, // Disable worker untuk debugging
         ...(useProxy && {
           fetchSetup: (ctx, init) => {
-            const proxied = `http://localhost:8080?url=${encodeURIComponent(
+            const proxied = ` http://localhost:8080/?url=${encodeURIComponent(
               ctx.url
             )}`;
             return new Request(proxied, init);
           },
         }),
         autoStartLoad: true,
-        // Konfigurasi untuk menangani codec issues
         manifestLoadingTimeOut: 10000,
         manifestLoadingMaxRetry: 4,
         levelLoadingTimeOut: 10000,
         fragLoadingTimeOut: 20000,
-        // Biarkan HLS.js mencoba menangani codec yang tidak didukung
         forceKeyFrameOnDiscontinuity: true,
         abrEwmaDefaultEstimate: 500000,
       });
@@ -119,9 +117,9 @@ export default function HlsPlayer({
               console.log("Fatal media error, mencoba recovery...");
               if (data.details === "bufferAddCodecError") {
                 setErr(
-                  `Unsupported code: ${
+                  `Codec tidak didukung: ${
                     data.mimeType || "unknown"
-                  }. Try another browser`
+                  }. Coba browser lain.`
                 );
               } else {
                 hls.recoverMediaError();
@@ -193,9 +191,8 @@ export default function HlsPlayer({
         autoPlay={autoPlay}
         muted={muted}
         playsInline={playsInline}
-        preload="metadata"
-        crossOrigin="anonymous"
         className="w-full h-auto rounded-lg bg-black"
+        type="application/x-mpegurl"
       />
       {err ? (
         <div className="mt-2 p-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded">

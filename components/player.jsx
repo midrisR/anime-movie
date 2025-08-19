@@ -142,7 +142,6 @@ export default function Button({ children, episodeId, episodes, ...props }) {
       getSingleEpisodeLink(episodeId);
     }
   }, [episodes, episodeId]);
-  console.log(selectedEpisode);
 
   return (
     <div className="space-y-6">

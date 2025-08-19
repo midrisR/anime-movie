@@ -1,6 +1,6 @@
 import { getDetailAnime } from "@/lib/api";
-import HlsQualityPlayer from "@/components/HlsQualityPlayer";
-import Button from "@/components/home/button";
+import Button from "@/components/slug/button";
+import VidstackHlsPlayer from "@/components/VidstackHlsPlayer";
 export default async function Page({ params }) {
   const { id } = await params;
   const data = await getDetailAnime({ id, provider: "animepahe" });
@@ -30,7 +30,8 @@ export default async function Page({ params }) {
       </div>
       <div className="flex flex-col w-full"></div>
       <div className="max-w-3xl mx-auto p-4">
-        <Button episodes={data.episodes} />
+        {/* <Button episodes={data.episodes} /> */}
+        <VidstackHlsPlayer sources={data.episodes} />
       </div>
     </div>
   );

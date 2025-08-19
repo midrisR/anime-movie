@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Stream } from "@/lib/api";
-import HlsQualityPlayer from "../HlsQualityPlayer";
+import HlsQualityPlayer from "./HlsQualityPlayer";
 import Image from "next/image";
 
 export default function EpisodePlayer({ episodes }) {
@@ -13,10 +13,12 @@ export default function EpisodePlayer({ episodes }) {
 
   // Function to add proxy URL prefix
   const addProxyUrl = (url) => {
-    if (!url || url.startsWith("http://localhost:8080/")) {
+    if (!url || url.startsWith("http:localhost:8080")) {
       return url;
     }
-    return `http://localhost:8080/?url=${encodeURIComponent(url)}`;
+    return ` http:localhost:8080/?url=m3u8-proxy?url=${encodeURIComponent(
+      url
+    )}`;
   };
 
   // Process API response data for video sources
@@ -24,7 +26,7 @@ export default function EpisodePlayer({ episodes }) {
     const processedSources =
       streamData.sources?.map((source) => ({
         ...source,
-        url: addProxyUrl(source.url),
+        url: source.url,
       })) || [];
 
     return {
@@ -95,7 +97,6 @@ export default function EpisodePlayer({ episodes }) {
       </div>
     );
   }
-  console.log("selectedEpisode", selectedEpisode);
 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6">
@@ -149,6 +150,7 @@ export default function EpisodePlayer({ episodes }) {
                 <HlsQualityPlayer
                   sources={selectedEpisode.streamSources}
                   headers={selectedEpisode.headers}
+                  poster={selectedEpisode.image}
                 />
               ) : (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">

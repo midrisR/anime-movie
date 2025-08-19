@@ -9,8 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vidstack/react": "^1.12.13",
     "axios": "^1.11.0",
-    "hls.js": "^1.5.17",
+    "hls.js": "^1.6.10",
     "http-proxy-middleware": "^3.0.5",
     "next": "15.4.6",
     "react": "19.1.0",

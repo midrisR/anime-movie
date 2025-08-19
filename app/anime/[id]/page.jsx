@@ -1,5 +1,5 @@
 import { getInfoAnime, getAnimeEpisode } from "@/lib/api";
-import Button from "@/components/button";
+import Player from "@/components/player";
 export default async function page({ params }) {
   const { id } = await params;
   const { data } = await getInfoAnime(id);
@@ -28,18 +28,7 @@ export default async function page({ params }) {
       </div>
       {/* episode */}
       <div className="">
-        {/* {episodes.map((episode) => (
-          <Button
-            episodes={episodes}
-            key={episode.number}
-            className="flex mt-4 cursor-pointer"
-            episodeId={episode.episodeId}
-          >
-            <span className="mr-2">{episode.number}</span>
-            <p>{episode.title}</p>
-          </Button>
-        ))} */}
-        <Button sources={episodes} episodes={episodes} />
+        <Player sources={episodes} episodes={episodes} />
       </div>
     </div>
   );
