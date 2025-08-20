@@ -16,9 +16,7 @@ export default function EpisodePlayer({ episodes }) {
     if (!url || url.startsWith("http:localhost:8080")) {
       return url;
     }
-    return ` http:localhost:8080/?url=m3u8-proxy?url=${encodeURIComponent(
-      url
-    )}`;
+    return `http:localhost:8080/?url=m3u8-proxy?url=${encodeURIComponent(url)}`;
   };
 
   // Process API response data for video sources
@@ -46,7 +44,6 @@ export default function EpisodePlayer({ episodes }) {
 
       // Use episode.id as the episodeId for the API call
       const data = await Stream(episode.id);
-      console.log("data", data);
 
       if (!data || !data.sources || data.sources.length === 0) {
         throw new Error("No video sources available for this episode");

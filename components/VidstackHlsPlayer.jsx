@@ -100,19 +100,18 @@ export default function VidstackHlsPlayer({ sources = [], poster }) {
             className="w-full aspect-video bg-black rounded-lg overflow-hidden"
             title="Episode Player"
             src={{
-              src: `https://proxy-puce-phi.vercel.app/m3u8-proxy?url=${selectedEpisode.streamSources[0]?.url}`,
+              src: ` https://m3u8proxy-delta.vercel.app/m3u8-proxy?url=${selectedEpisode.streamSources[0]?.url}`,
               type: "application/x-mpegurl",
             }}
             crossOrigin
             playsInline
-            preload="none"
             onProviderChange={onProviderChange}
             load="play"
           >
             <MediaProvider>
               <Poster
                 className="absolute inset-0 block h-full w-full opacity-0 transition-opacity data-[visible]:opacity-100 object-cover"
-                src={poster}
+                src={selectedEpisode?.image}
                 alt="Video poster"
               />
             </MediaProvider>
