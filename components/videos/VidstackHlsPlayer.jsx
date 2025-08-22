@@ -1,8 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Stream } from "@/lib/api";
-import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
+import { getAnimeEpisodeLinkStream } from "@/lib/api";
+import {
+  MediaPlayer,
+  MediaProvider,
+  Poster,
+  Track,
+  Captions,
+} from "@vidstack/react";
 import {
   defaultLayoutIcons,
   DefaultVideoLayout,
@@ -13,17 +19,24 @@ import { isHLSProvider } from "@vidstack/react";
 import "@vidstack/react/player/styles/default/theme.css";
 import "@vidstack/react/player/styles/default/layouts/video.css";
 
-export default function VidstackHlsPlayer({ sources = [], poster }) {
+export default function VidstackHlsPlayer({ sources }) {
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   const [isLoadingPlayer, setIsLoadingPlayer] = useState(false);
   const [current, setCurrentSource] = useState("");
   const [error, setError] = useState(null);
+  const proxyUrl = "https://m3u8proxy-delta.vercel.app/m3u8-proxy?url=";
+  console.log(sources);
+
   const processEpisodeStreamData = (streamData, episodeInfo) => {
     const processedSources =
       streamData.sources?.map((source) => ({
         ...source,
         url: source.url,
       })) || [];
+    const subtitles = streamData.tracks.map((item) => ({
+      ...item,
+      url: proxyUrl + encodeURIComponent(item.url),
+    }));
 
     return {
       ...episodeInfo,
@@ -31,6 +44,7 @@ export default function VidstackHlsPlayer({ sources = [], poster }) {
       headers: streamData.headers || null,
       download: streamData.download || [],
       hasValidSources: processedSources.length > 0,
+      subtitles: subtitles,
     };
   };
 
@@ -38,10 +52,11 @@ export default function VidstackHlsPlayer({ sources = [], poster }) {
     try {
       setIsLoadingPlayer(true);
       setError(null);
-      const data = await Stream(episode.id);
+      const { data } = await getAnimeEpisodeLinkStream(episode.episodeId);
       if (!data || !data.sources || data.sources.length === 0) {
         throw new Error("No video sources available for this episode");
       }
+
       const processedEpisode = processEpisodeStreamData(data, episode);
       setSelectedEpisode(processedEpisode);
     } catch (error) {
@@ -51,11 +66,11 @@ export default function VidstackHlsPlayer({ sources = [], poster }) {
       setIsLoadingPlayer(false);
     }
   };
+
   useEffect(() => {
     fetchEpisodeStream(sources[0]);
   }, []);
 
-  // Handle provider configuration for HLS
   function onProviderChange(provider) {
     if (isHLSProvider(provider)) {
       provider.library = () => import("hls.js");
@@ -74,57 +89,46 @@ export default function VidstackHlsPlayer({ sources = [], poster }) {
 
   return (
     <div className="space-y-3">
-      {/* Quality Selector */}
-      {isLoadingPlayer ? (
-        <p>Loading</p>
-      ) : (
-        <>
-          <div className="flex flex-wrap gap-2">
-            {selectedEpisode.streamSources?.map((opt) => (
-              <button
-                key={opt.url}
-                onClick={() => setCurrentSource(opt)}
-                className={`px-3 py-1 rounded border text-sm transition-colors ${
-                  current?.url === opt.url
-                    ? "bg-black text-white border-black"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                {opt.quality}
-              </button>
-            ))}
-          </div>
+      <MediaPlayer
+        className="w-full aspect-video bg-black rounded-lg overflow-hidden"
+        title="Episode Player"
+        viewType="video"
+        streamType="on-demand"
+        logLevel="warn"
+        crossOrigin
+        playsInline
+        onProviderChange={onProviderChange}
+        load="play"
+        src={[
+          {
+            src: `https://m3u8proxy-delta.vercel.app/m3u8-proxy?url=${selectedEpisode.streamSources[0]?.url}`,
+            type: "application/x-mpegurl",
+          },
+        ]}
+        subtitles={selectedEpisode.subtitles}
+      >
+        <MediaProvider>
+          <Poster
+            className="absolute inset-0 block h-full w-full opacity-0 transition-opacity data-[visible]:opacity-100 object-cover"
+            src={`https://m3u8proxy-delta.vercel.app/m3u8-proxy?url=${selectedEpisode?.image}`}
+            alt="Video poster"
+            subtitles={selectedEpisode.subtitles}
+          />
 
-          <MediaPlayer
-            className="w-full aspect-video bg-black rounded-lg overflow-hidden"
-            title="Episode Player"
-            crossOrigin
-            playsInline
-            onProviderChange={onProviderChange}
-            load="play"
-            src={[
-              {
-                src: `http://localhost:8080/?url=${selectedEpisode.streamSources[0]?.url}`,
-                type: "application/x-mpegurl",
-              },
-            ]}
-          >
-            <MediaProvider>
-              <Poster
-                className="absolute inset-0 block h-full w-full opacity-0 transition-opacity data-[visible]:opacity-100 object-cover"
-                src={`http://localhost:8080/?url=${selectedEpisode?.image}`}
-                alt="Video poster"
-              />
-            </MediaProvider>
+          <Track
+            src={selectedEpisode.subtitles[1].url}
+            label={selectedEpisode.subtitles[1].lang}
+            language="en-US"
+            kind="captions"
+            type="vtt"
+          />
+        </MediaProvider>
 
-            <DefaultVideoLayout
-              thumbnails=""
-              icons={defaultLayoutIcons}
-              noScrubGesture
-            />
-          </MediaPlayer>
-        </>
-      )}
+        <DefaultVideoLayout
+          thumbnails={`https://m3u8proxy-delta.vercel.app/m3u8-proxy?url=https://cdn.dotstream.buzz/anime/807c4063f8fd3da43661d3087d697c7e/46174470ff44b136e1c23ebfc6163b0e/subtitles/ind-4.vtt`}
+          icons={defaultLayoutIcons}
+        />
+      </MediaPlayer>
     </div>
   );
 }

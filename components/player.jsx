@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { getAnimeEpisodeServer, getAnimeEpisodeLinkStream } from "@/lib/api";
 import HlsQualityPlayer from "./HlsQualityPlayer";
 
-export default function Button({ children, episodeId, episodes, ...props }) {
+export default function Button({ episodeId, episodes }) {
   const [episodeAnime, setEpisodeAnime] = useState([]);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +16,7 @@ export default function Button({ children, episodeId, episodes, ...props }) {
     },
     sources: [
       {
-        url: "http://localhost:8080/?url=https://cdn.dotstream.buzz/anime/807c4063f8fd3da43â€¦7c7e/46174470ff44b136e1c23ebfc6163b0e/master.m3u8&header={Refere:https://megaplay.buzz/stream/s-2/dr-stone-science-future-part-2-19784?ep=141745/dub}",
+        url: "http://localhost:5000/m3u8-proxy?url=https://cdn.dotstream.buzz/anime/807c4063f8fd3da43â€¦7c7e/46174470ff44b136e1c23ebfc6163b0e/master.m3u8&header={Refere:https://megaplay.buzz/stream/s-2/dr-stone-science-future-part-2-19784?ep=141745/dub}",
         isM3U8: true,
         isDub: true,
       },
@@ -29,9 +29,11 @@ export default function Button({ children, episodeId, episodes, ...props }) {
 
     return sources.map((source) => ({
       ...source,
-      url: source.url.startsWith("http://localhost:8080/")
+      url: source.url.startsWith("http://localhost:5000/")
         ? source.url
-        : `http://localhost:8080/?url=${encodeURIComponent(source.url)}`,
+        : `http://localhost:5000/m3u8-proxy?url=${encodeURIComponent(
+            source.url
+          )}`,
     }));
   };
 

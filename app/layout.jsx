@@ -1,7 +1,10 @@
 import { Work_Sans } from "next/font/google";
 import "./globals.css";
+
 import "@vidstack/react/player/styles/default/theme.css";
+import "@vidstack/react/player/styles/default/layouts/audio.css";
 import "@vidstack/react/player/styles/default/layouts/video.css";
+
 const worksans = Work_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
