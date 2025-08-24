@@ -1,6 +1,6 @@
 import { getInfoAnime, getAnimeEpisode } from "@/lib/api";
-import Player from "@/components/player";
-import VidstackHlsPlayer from "@/components/videos/VidstackHlsPlayer";
+// import Player from "@/components/player";
+import VidstackPlayerWithLogVtt from "@/components/videos";
 export default async function page({ params }) {
   const { slug } = await params;
 
@@ -31,7 +31,7 @@ export default async function page({ params }) {
       {/* episode */}
       <div className="">
         {/* <Player episodes={episodes} /> */}
-        <VidstackHlsPlayer sources={episodes} />
+        <VidstackPlayerWithLogVtt sources={episodes} />
       </div>
     </div>
   );

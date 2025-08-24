@@ -16,7 +16,7 @@ export default function Button({ episodeId, episodes }) {
     },
     sources: [
       {
-        url: "http://localhost:5000/m3u8-proxy?url=https://cdn.dotstream.buzz/anime/807c4063f8fd3da43â€¦7c7e/46174470ff44b136e1c23ebfc6163b0e/master.m3u8&header={Refere:https://megaplay.buzz/stream/s-2/dr-stone-science-future-part-2-19784?ep=141745/dub}",
+        url: "https://m3u8proxy-delta.vercel.app/m3u8-proxy?url=https://cdn.dotstream.buzz/anime/807c4063f8fd3da43â€¦7c7e/46174470ff44b136e1c23ebfc6163b0e/master.m3u8&header={Refere:https://megaplay.buzz/stream/s-2/dr-stone-science-future-part-2-19784?ep=141745/dub}",
         isM3U8: true,
         isDub: true,
       },
@@ -29,9 +29,9 @@ export default function Button({ episodeId, episodes }) {
 
     return sources.map((source) => ({
       ...source,
-      url: source.url.startsWith("http://localhost:5000/")
+      url: source.url.startsWith("https://m3u8proxy-delta.vercel.app/")
         ? source.url
-        : `http://localhost:5000/m3u8-proxy?url=${encodeURIComponent(
+        : `https://m3u8proxy-delta.vercel.app/m3u8-proxy?url=${encodeURIComponent(
             source.url
           )}`,
     }));

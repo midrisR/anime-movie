@@ -4,7 +4,6 @@ export default async function page({ params }) {
   const { id } = await params;
   const { data } = await getInfoAnime(id);
   const { episodes } = await getAnimeEpisode(id);
-  console.log("episodes", episodes);
 
   return (
     <div className="text-white">
