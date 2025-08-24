@@ -3,7 +3,7 @@ import Player from "@/components/player";
 import Link from "next/link";
 
 export default async function Page() {
-  const response = await fetch("http://localhost:4444/api/top-ten");
+  const response = await fetch(`${process.env.API_URL}/api/top-ten`);
   const { results } = await response.json();
   const url = (text) => {
     return text
