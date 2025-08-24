@@ -16,8 +16,7 @@ import {
 import { isHLSProvider } from "@vidstack/react";
 
 export default function Player({ sources }) {
-  const BASE = "http://localhost:4444";
-  const proxyUrl = "http://localhost:8080/?url=";
+  const BASE = process.env.API_URL;
 
   async function getAnimeEpisodeLinkStream(id) {
     const res = await fetch(`${BASE}/api/stream?id=${id}&server=hd-1&type=sub`);
@@ -122,7 +121,7 @@ export default function Player({ sources }) {
           {selectedEpisode.subtitles?.map((subtitle, index) => (
             <Track
               key={index}
-              src={`http://localhost:5000/m3u8-proxy?url=${subtitle.file}`}
+              src={`https://m3u8proxy-delta.vercel.app/m3u8-proxy?url=${subtitle.file}`}
               label={subtitle.label} // Human readable name for UI
               kind={subtitle.kind}
               type="vtt"

@@ -2,13 +2,13 @@ import List from "../components/list";
 
 export default async function Page({ params }) {
   const { slug } = await params;
-  const res = await fetch(`http://localhost:4444/api/info?id=${slug}`, {
+  const res = await fetch(`${process.env.API_URL}/api/info?id=${slug}`, {
     cache: "no-store",
     headers: { Accept: "application/json" },
   });
   const { results } = await res.json();
 
-  const server = await fetch(`http://localhost:4444/api/episodes/${slug}`, {
+  const server = await fetch(`${process.env.API_URL}/api/episodes/${slug}`, {
     cache: "no-store",
     headers: { Accept: "application/json" },
   });
